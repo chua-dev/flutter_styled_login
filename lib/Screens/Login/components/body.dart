@@ -7,6 +7,8 @@ import 'package:flutter_auth/components/rounded_input_field.dart';
 import 'package:flutter_auth/components/rounded_password_field.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_auth/Screens/Services/authentication_service.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class Body extends StatelessWidget {
   const Body({
@@ -15,6 +17,7 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var currentUser;
     Size size = MediaQuery.of(context).size;
     return Background(
       child: SingleChildScrollView(
@@ -40,11 +43,20 @@ class Body extends StatelessWidget {
             ),
             RoundedButton(
               text: "LOGIN",
-              press: () {},
+              press: () async {
+                Response res = await AuthenticationService().signIn('amsyar@p2digital.com', 'P@ssword2');
+                final jsonBody = json.decode(res.body);
+                print('Json Body');
+                print(jsonBody['status']);
+                currentUser = jsonBody['user'];
+                print('Current User');
+                print(currentUser);
+                print(currentUser['name']);
+              },
             ),
             
             SizedBox(height: size.height * 0.03),
-            AlreadyHaveAnAccountCheck(
+            /*AlreadyHaveAnAccountCheck(
               press: () {
                 Navigator.push(
                   context,
@@ -55,10 +67,16 @@ class Body extends StatelessWidget {
                   ),
                 );
               },
-            ),
+            ),*/
+            Text("You haven't Login",
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )
           ],
         ),
       ),
     );
   }
 }
+
