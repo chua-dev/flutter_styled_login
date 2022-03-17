@@ -7,6 +7,8 @@ import 'package:flutter_auth/components/rounded_input_field.dart';
 import 'package:flutter_auth/components/rounded_password_field.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_auth/Screens/Services/authentication_service.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class Body extends StatefulWidget {
   //const Body({Key? key}) : super(key: key);
@@ -17,11 +19,12 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   final _formKey = GlobalKey<FormState>();
-  String email = '';
-  String password = '';
+  String email_value = '';
+  String password_value = '';
   String error = '';
   @override
   Widget build(BuildContext context) {
+    var currentUser;
     Size size = MediaQuery.of(context).size;
     return Background(
       child: SingleChildScrollView(
@@ -41,21 +44,30 @@ class _BodyState extends State<Body> {
             RoundedInputField(
               hintText: "Your Email",
               onChanged: (email) {
-                setState(() => email = email);
+                setState(() => email_value = email);
               },
             ),
             RoundedPasswordField(
               onChanged: (password) {
-                setState(() => password = password);
+                setState(() => password_value = password);
               },
             ),
             RoundedButton(
               text: "LOGIN",
-              press: () {},
+              press: () async {
+                Response res = await AuthenticationService().signIn(email_value,password_value);
+                final jsonBody = json.decode(res.body);
+                print('Json Body');
+                print(jsonBody['status']);
+                currentUser = jsonBody['user'];
+                print('Current User');
+                print(currentUser);
+                print(currentUser['name']);
+              },
             ),
 
             SizedBox(height: size.height * 0.03),
-            AlreadyHaveAnAccountCheck(
+            /*AlreadyHaveAnAccountCheck(
               press: () {
                 Navigator.push(
                   context,
@@ -66,8 +78,12 @@ class _BodyState extends State<Body> {
                   ),
                 );
               },
-            ),
-          ],
+            ),*/
+            Text("You haven't Login",
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            )  ],
         ),
       ),
     );
