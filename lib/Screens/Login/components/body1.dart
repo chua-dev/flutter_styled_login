@@ -57,19 +57,24 @@ class _BodyState extends State<Body> {
               text: "LOGIN",
               press: () async {
                 Response res = await AuthenticationService().signIn(emailValue,passwordValue);
-                final jsonBody = json.decode(res.body);
-                print('Json Body');
-                print(jsonBody['status']);
-                currentUser = jsonBody['user'];
-                print('Current User');
-                print(currentUser);
-                //print(currentUser['name']);
-                if (jsonBody['status'] == "failed" ){
-                  setState(() => display = 'You have not signed in!');
+                print(res.body);
+                if (res.body != ''){
+                  final jsonBody = json.decode(res.body);
+                  print('Json Body');
+                  print(jsonBody['status']);
+                  currentUser = jsonBody['user'];
+                  print('Current User');
+                  print(currentUser);
+                  //print(currentUser['name']);
+                  if (jsonBody['status'] == "failed"){
+                    setState(() => display = 'You have not signed in!');
+                  } else {
+                    setState(() => display = 'You have signed in as ${currentUser["name"]}');
+                  }
+                  print(display);
                 } else {
-                  setState(() => display = 'You have signed in as ${currentUser["name"]}');
+                  setState(() => display = 'You have not signed in!');
                 }
-                print(display);
               },
             ),
 
