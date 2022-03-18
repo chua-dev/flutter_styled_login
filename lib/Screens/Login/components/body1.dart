@@ -19,8 +19,9 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   final _formKey = GlobalKey<FormState>();
-  String email_value = '';
-  String password_value = '';
+  String emailValue = '';
+  String passwordValue = '';
+  String display = '';
   String error = '';
   @override
   Widget build(BuildContext context) {
@@ -44,25 +45,31 @@ class _BodyState extends State<Body> {
             RoundedInputField(
               hintText: "Your Email",
               onChanged: (email) {
-                setState(() => email_value = email);
+                setState(() => emailValue = email);
               },
             ),
             RoundedPasswordField(
               onChanged: (password) {
-                setState(() => password_value = password);
+                setState(() => passwordValue = password);
               },
             ),
             RoundedButton(
               text: "LOGIN",
               press: () async {
-                Response res = await AuthenticationService().signIn(email_value,password_value);
+                Response res = await AuthenticationService().signIn(emailValue,passwordValue);
                 final jsonBody = json.decode(res.body);
                 print('Json Body');
                 print(jsonBody['status']);
                 currentUser = jsonBody['user'];
                 print('Current User');
                 print(currentUser);
-                print(currentUser['name']);
+                //print(currentUser['name']);
+                if (jsonBody['status'] == "failed" ){
+                  setState(() => display = 'You have not signed in!');
+                } else {
+                  setState(() => display = 'You have signed in as ${currentUser["name"]}');
+                }
+                print(display);
               },
             ),
 
@@ -79,11 +86,21 @@ class _BodyState extends State<Body> {
                 );
               },
             ),*/
-            Text("You haven't Login",
+            /*(currentUser == null || currentUser["name"] == null)
+              ? Text("You have not signed in!",
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ) : Text("You have signed in as ${currentUser["name"]}",
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+            )*/
+            Text(display,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            )  ],
+              style: const TextStyle(fontWeight: FontWeight.bold),)
+          ]
         ),
       ),
     );
